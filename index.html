@@ -3,68 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فرم شوخی</title>
+    <title>آزمون تعیین سطح زبان انگلیسی</title>
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
-        #result { margin-top: 20px; padding: 15px; background: #e9ecef; border-radius: 8px; display: none; }
-        .joke-text { font-size: 20px; font-weight: bold; color: red; text-align: center; }
+        body {
+            font-family: Tahoma, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 450px;
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .question-box { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 15px; }
+        .options-list { list-style: none; padding: 0; }
+        .options-list li {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .options-list li:hover { background: #e2e8f0; border-color: #cbd5e1; }
+        .options-list li.selected { background: #007bff; color: white; border-color: #0056b3; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 15px;
+        }
+        button:hover { background-color: #218838; }
+        #result-box {
+            text-align: center;
+            display: none;
+        }
+        #result-box h3 { color: #28a745; font-size: 24px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>ثبت اطلاعات</h2>
-    
-    <div class="input-group">
-        <label>نام:</label>
-        <input type="text" id="firstName">
+<div class="container" id="quiz-container">
+    <h2>آزمون تعیین سطح زبان</h2>
+    <div id="question-container">
+        <div class="question-box" id="question-text">سوال اینجا نمایش داده می‌شود</div>
+        <ul class="options-list" id="options-list">
+            <!-- گزینه‌ها اینجا لود می‌شوند -->
+        </ul>
+        <button id="next-btn" onclick="nextQuestion()">سوال بعد</button>
     </div>
 
-    <div class="input-group">
-        <label>نام خانوادگی:</label>
-        <input type="text" id="lastName">
-    </div>
-
-    <div class="input-group">
-        <label>وزن (کیلوگرم):</label>
-        <input type="number" id="weight">
-    </div>
-
-    <button onclick="showJoke()">ذخیره اطلاعات</button>
-
-    <div id="result">
-        <div id="displayData" class="joke-text"></div>
+    <div id="result-box">
+        <h3>نتیجه آزمون شما</h3>
+        <p id="result-text" style="font-size: 18px; font-weight: bold; line-height: 1.6;"></p>
+        <button onclick="restartQuiz()">شروع مجدد آزمون</button>
     </div>
 </div>
 
 <script>
-    function showJoke() {
-        // ۱. گرفتن مقادیر
-        const fName = document.getElementById('firstName').value;
-        const lName = document.getElementById('lastName').value;
-        const w = document.getElementById('weight').value;
+    // سوالات آزمون
+    const questions = [
+        {
+            question: "۱. ماضی بعید (گذشته کامل) فعل 'Go' چیست؟",
+            options: ["Went", "Gone", "Had gone", "Going"],
+            answer: 2 // ایندکس گزینه درست (از صفر می‌شمارد: گزینه سوم یعنی 2)
+        },
+        {
+            question: "۲. جای خالی را پر کنید: She ___ to school every day.",
+            options: ["go", "goes", "gone", "going"],
+            answer: 1
+        },
+        {
+            question: "۳. معنی کلمه 'Environment' چیست؟",
+            options: ["محیط زیست", "اقتصاد", "پیشرفت", "جامعه"],
+            answer: 0
+        }
+    ];
 
-        // ۲. چک کردن خالی نبودن
-        if (fName === "" || lName === "" || w === "") {
-            alert("لطفاً نام، نام خانوادگی و وزن را پر کن!");
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let selectedOptionIndex = null;
+
+    const questionText = document.getElementById('question-text');
+    const optionsList = document.getElementById('options-list');
+    const nextBtn = document.getElementById('next-btn');
+    const questionContainer = document.getElementById('question-container');
+    const resultBox = document.getElementById('result-box');
+    const resultText = document.getElementById('result-text');
+
+    function loadQuestion() {
+        selectedOptionIndex = null;
+        const currentQ = questions[currentQuestionIndex];
+        questionText.innerText = currentQ.question;
+        optionsList.innerHTML = "";
+
+        currentQ.options.forEach((opt, index) => {
+            const li = document.createElement('li');
+            li.innerText = opt;
+            li.onclick = () => selectOption(index, li);
+            optionsList.appendChild(li);
+        });
+    }
+
+    function selectOption(index, element) {
+        // برداشتن کلاس انتخاب شده از بقیه گزینه‌ها
+        document.querySelectorAll('.options-list li').forEach(li => li.classList.remove('selected'));
+        // اضافه کردن کلاس به گزینه انتخاب شده
+        element.classList.add('selected');
+        selectedOptionIndex = index;
+    }
+
+    function nextQuestion() {
+        if (selectedOptionIndex === null) {
+            alert("لطفاً یک گزینه را انتخاب کنید!");
             return;
         }
 
-        // ۳. نمایش نتیجه
-        const resultDiv = document.getElementById('result');
-        const displayDiv = document.getElementById('displayData');
+        // بررسی درست بودن پاسخ
+        if (selectedOptionIndex === questions[currentQuestionIndex].answer) {
+            score++;
+        }
 
-        resultDiv.style.display = 'block';
-        
-        // استفاده از بک‌تیک برای ساخت جمله
-        displayDiv.innerText = w + " کیلو وزنته برو لاغر کن " + fName + " " + lName;
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
     }
+
+    function showResult() {
+        questionContainer.style.display = 'none';
+        resultBox.style.display = 'block';
+
+        let level = "";
+        let message = "";
+
+        if (score === 3) {
+            level = "پیشرفته (Advanced - C1)";
+            message = "عالی بود! شما تسلط فوق‌العاده‌ای روی گرامر و واژگان دارید. 🚀";
+        } else if (score === 2) {
+            level = "متوسط (Intermediate - B1/B2)";
+            message = "خوب است! پایه‌تان قوی است ولی با کمی تمرین می‌توانید حرفه‌ای شوید. 👍";
+        } else {
+            level = "مبتدی (Beginner - A1/A2)";
+            message = "نیاز به تمرین بیشتر دارید. پیشنهاد می‌کنیم دوره‌های پایه را مرور کنید. 🌱";
+        }
+
+        resultText.innerHTML = `امتیاز شما: ${score} از ${questions.length}<br>سطح شما: <span style="color: #007bff;">${level}</span><br><br>${message}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultBox.style.display = 'none';
+        questionContainer.style.display = 'block';
+        loadQuestion();
+    }
+
+    // شروع اولین سوال هنگام لود صفحه
+    loadQuestion();
 </script>
 
 </body>
