@@ -3,182 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>آزمون تعیین سطح زبان انگلیسی</title>
+    <title>فروشگاه گل من</title>
+
     <style>
+        * { box-sizing: border-box; }
         body {
-            font-family: Tahoma, sans-serif;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
             margin: 0;
-        }
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            width: 90%;
-            max-width: 450px;
-        }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .question-box { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 15px; }
-        .options-list { list-style: none; padding: 0; }
-        .options-list li {
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .options-list li:hover { background: #e2e8f0; border-color: #cbd5e1; }
-        .options-list li.selected { background: #007bff; color: white; border-color: #0056b3; }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 15px;
-        }
-        button:hover { background-color: #218838; }
-        #result-box {
+            padding: 20px 20px 280px;
+            font-family: Tahoma, sans-serif;
             text-align: center;
-            display: none;
+            background: #fff7f9;
+            color: #333;
         }
-        #result-box h3 { color: #28a745; font-size: 24px; }
+        h1 { color: #be185d; }
+        .flower-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            margin: 28px auto;
+        }
+        .flower-card {
+            width: 190px;
+            padding: 14px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #00000012;
+        }
+        .flower-img { width: 100%; height: 140px; object-fit: cover; border-radius: 7px; }
+        .flower-name { margin: 12px 0; font-weight: bold; }
+        .flower-price { margin-bottom: 12px; color: #be185d; font-weight: bold; }
+        button { border: 0; border-radius: 6px; padding: 11px; font: inherit; cursor: pointer; }
+        .buy-btn { width: 100%; background: #be185d; color: white; }
+
+        /* Cart Styles */
+        .cart-section {
+            position: fixed;
+            z-index: 5;
+            right: 0; bottom: 0; left: 0;
+            max-height: 280px;
+            overflow-y: auto;
+            padding: 12px 18px;
+            background: white;
+            border-top: 2px solid #be185d;
+            box-shadow: 0 -3px 12px #00000016;
+        }
+        .cart-title { margin-bottom: 8px; color: #9d174d; font-weight: bold; text-align: right; }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            text-align: right;
+        }
+        .item-info { flex-grow: 1; }
+        .item-controls { display: flex; align-items: center; gap: 8px; }
+        .qty-btn {
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            background: #f3f4f6;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .total-price { margin: 10px 0; font-weight: bold; text-align: right; }
+        #checkout-btn { display: none; width: 100%; background: #047857; color: white; }
+
+        /* Modals & Forms */
+        .overlay { display: none; position: fixed; z-index: 10; inset: 0; background: #0008; }
+        .form-panel {
+            display: none;
+            position: fixed;
+            z-index: 11;
+            top: 50%; left: 50%;
+            width: min(92%, 440px);
+            max-height: 88vh;
+            overflow-y: auto;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            text-align: right;
+        }
+        .form-panel h2 { margin-top: 0; color: #9d174d; font-size: 20px; text-align: center; }
+        label { display: block; margin-top: 10px; font-size: 14px; }
+        input, textarea, select {
+            display: block; width: 100%; margin-top: 5px;
+            padding: 11px; border: 1px solid #ccc; border-radius: 6px; font: inherit;
+        }
+        .submit-btn { width: 100%; margin-top: 14px; background: #047857; color: white; }
+        .close-btn { width: 100%; margin-top: 8px; background: #eee; color: #333; }
+
+        #receipt {
+            display: none; max-width: 600px; margin: 28px auto;
+            padding: 20px; background: #ecfdf5;
+            border: 2px dashed #047857; border-radius: 10px; line-height: 2;
+        }
+
+        .reviews-section {
+            max-width: 650px; margin: 38px auto; padding: 20px;
+            background: white; border-radius: 10px; box-shadow: 0 3px 12px #00000012; text-align: right;
+        }
+        .review-item { padding: 12px 0; border-bottom: 1px solid #f1dce5; }
+        .review-name { color: #9d174d; font-weight: bold; }
+        .review-date { color: #777; font-size: 12px; }
+
+        @media (max-width: 420px) {
+            body { padding-right: 12px; padding-left: 12px; }
+            .flower-card { width: min(100%, 280px); }
+        }
     </style>
 </head>
+
 <body>
+    <h1>🌸 فروشگاه گل من 🌸</h1>
+    <p>گل مورد نظرت را انتخاب کن.</p>
 
-<div class="container" id="quiz-container">
-    <h2>آزمون تعیین سطح زبان</h2>
-    <div id="question-container">
-        <div class="question-box" id="question-text">سوال اینجا نمایش داده می‌شود</div>
-        <ul class="options-list" id="options-list">
-            <!-- گزینه‌ها اینجا لود می‌شوند -->
-        </ul>
-        <button id="next-btn" onclick="nextQuestion()">سوال بعد</button>
-    </div>
+    <div class="flower-container" id="flower-container"></div>
 
-    <div id="result-box">
-        <h3>نتیجه آزمون شما</h3>
-        <p id="result-text" style="font-size: 18px; font-weight: bold; line-height: 1.6;"></p>
-        <button onclick="restartQuiz()">شروع مجدد آزمون</button>
-    </div>
-</div>
+    <section class="reviews-section">
+        <h2>💬 نظر مشتری‌ها</h2>
+        <div id="reviews-list"></div>
+    </section>
 
-<script>
-    // سوالات آزمون
-    const questions = [
-        {
-            question: "۱. ماضی بعید (گذشته کامل) فعل 'Go' چیست؟",
-            options: ["Went", "Gone", "Had gone", "Going"],
-            answer: 2 // ایندکس گزینه درست (از صفر می‌شمارد: گزینه سوم یعنی 2)
-        },
-        {
-            question: "۲. جای خالی را پر کنید: She ___ to school every day.",
-            options: ["go", "goes", "gone", "going"],
-            answer: 1
-        },
-        {
-            question: "۳. معنی کلمه 'Environment' چیست؟",
-            options: ["محیط زیست", "اقتصاد", "پیشرفت", "جامعه"],
-            answer: 0
-        }
-    ];
+    <section class="cart-section">
+        <div class="cart-title">🛒 سبد خرید</div>
+        <div id="cart-items-list">
+            <p class="empty-message" style="text-align: center; color: #777;">سبد خرید خالی است.</p>
+        </div>
+        <div class="total-price">جمع کل: <span id="total-price">۰</span> تومان</div>
+        <button id="checkout-btn" onclick="showOrderForm()">ثبت سفارش</button>
+    </section>
 
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let selectedOptionIndex = null;
+    <div class="overlay" id="overlay" onclick="closePanels()"></div>
 
-    const questionText = document.getElementById('question-text');
-    const optionsList = document.getElementById('options-list');
-    const nextBtn = document.getElementById('next-btn');
-    const questionContainer = document.getElementById('question-container');
-    const resultBox = document.getElementById('result-box');
-    const resultText = document.getElementById('result-text');
+    <section class="form-panel" id="order-form-container">
+        <h2>🚚 اطلاعات سفارش و ارسال</h2>
+        <label>نام و نام خانوادگی</label>
+        <input id="user-name" type="text" required>
+        <label>شماره تماس</label>
+        <input id="user-phone" type="tel" inputmode="tel" required>
+        <label>نشانی (خیابان و کوچه)</label>
+        <textarea id="user-address" required></textarea>
+        <label>کد پستی (۱۰ رقم)</label>
+        <input id="user-postal-code" type="text" maxlength="10" required>
+        <label>پلاک</label>
+        <input id="user-plaque" type="text" required>
+        <label>واحد</label>
+        <input id="user-unit" type="text" required>
+        
+        <hr style="margin-top: 20px;">
+        <label>زمان تحویل (انتخاب کنید)</label>
+        <select id="delivery-date">
+            <option value="امروز">امروز</option>
+            <option value="فردا">فردا</option>
+            <option value="۲ روز آینده">۲ روز آینده</option>
+        </select>
+        <label>بازه زمانی تحویل</label>
+        <select id="delivery-time">
+            <option value="صبح (۰۸:۰۰ - ۱۲:۰۰)">صبح (۰۸:۰۰ - ۱۲:۰۰)</option>
+            <option value="بعدازظهر (۱۲:۰۰ - ۱۶:۰۰)">بعدازظهر (۱۲:۰۰ - ۱۶:۰۰)</option>
+            <option value="عصر (۱۶:۰۰ - ۲۰:۰۰)">عصر (۱۶:۰۰ - ۲۰:۰۰)</option>
+        </select>
 
-    function loadQuestion() {
-        selectedOptionIndex = null;
-        const currentQ = questions[currentQuestionIndex];
-        questionText.innerText = currentQ.question;
-        optionsList.innerHTML = "";
+        <button class="submit-btn" onclick="finishOrder()">ثبت سفارش</button>
+        <button class="close-btn" onclick="closePanels()">بستن</button>
+    </section>
 
-        currentQ.options.forEach((opt, index) => {
-            const li = document.createElement('li');
-            li.innerText = opt;
-            li.onclick = () => selectOption(index, li);
-            optionsList.appendChild(li);
-        });
-    }
+    <section class="form-panel" id="review-form-container">
+        <h2>💬 نظرت درباره فروشگاه</h2>
+        <textarea id="review-text" placeholder="نظرت را اینجا بنویس..." maxlength="500"></textarea>
+        <button class="submit-btn" onclick="saveReview()">ثبت نظر</button>
+        <button class="close-btn" onclick="closePanels()">بعداً</button>
+    </section>
 
-    function selectOption(index, element) {
-        // برداشتن کلاس انتخاب شده از بقیه گزینه‌ها
-        document.querySelectorAll('.options-list li').forEach(li => li.classList.remove('selected'));
-        // اضافه کردن کلاس به گزینه انتخاب شده
-        element.classList.add('selected');
-        selectedOptionIndex = index;
-    }
+    <section id="receipt"></section>
 
-    function nextQuestion() {
-        if (selectedOptionIndex === null) {
-            alert("لطفاً یک گزینه را انتخاب کنید!");
-            return;
-        }
+    <script>
+        const flowers = [
+            { id: 1, name: "رز قرمز", price: 250000, image: "https://images.unsplash.com/photo-1562618143-83320603980d?w=500" },
+            { id: 2, name: "لاله زرد", price: 180000, image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?w=500" },
+            { id: 3, name: "آفتابگردان", price: 220000, image: "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=500" }
+        ];
 
-        // بررسی درست بودن پاسخ
-        if (selectedOptionIndex === questions[currentQuestionIndex].answer) {
-            score++;
-        }
+        let cart = []; // هر آیتم: { id, name, price, qty }
+        let lastCustomerName = "";
 
-        currentQuestionIndex++;
+        function formatPrice(price) { return price.toLocaleString("fa-IR"); }
 
-        if (currentQuestionIndex < questions.length) {
-            loadQuestion();
-        } else {
-            showResult();
-        }
-    }
-
-    function showResult() {
-        questionContainer.style.display = 'none';
-        resultBox.style.display = 'block';
-
-        let level = "";
-        let message = "";
-
-        if (score === 3) {
-            level = "پیشرفته (Advanced - C1)";
-            message = "عالی بود! شما تسلط فوق‌العاده‌ای روی گرامر و واژگان دارید. 🚀";
-        } else if (score === 2) {
-            level = "متوسط (Intermediate - B1/B2)";
-            message = "خوب است! پایه‌تان قوی است ولی با کمی تمرین می‌توانید حرفه‌ای شوید. 👍";
-        } else {
-            level = "مبتدی (Beginner - A1/A2)";
-            message = "نیاز به تمرین بیشتر دارید. پیشنهاد می‌کنیم دوره‌های پایه را مرور کنید. 🌱";
+        function showFlowers() {
+            const container = document.getElementById("flower-container");
+            flowers.forEach(flower => {
+                const card = document.createElement("div");
+                card.className = "flower-card";
+                card.innerHTML = `
+                    <img src="${flower.image}" class="flower-img">
+                    <div class="flower-name">${flower.name}</div>
+                    <div class="flower-price">${formatPrice(flower.price)} تومان</div>
+                    <button class="buy-btn" onclick="addToCart(${flower.id})">افزودن به سبد</button>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        resultText.innerHTML = `امتیاز شما: ${score} از ${questions.length}<br>سطح شما: <span style="color: #007bff;">${level}</span><br><br>${message}`;
-    }
+        function addToCart(productId) {
+            const flower = flowers.find(f => f.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
 
-    function restartQuiz() {
-        currentQuestionIndex = 0;
-        score = 0;
-        resultBox.style.display = 'none';
-        questionContainer.style.display = 'block';
-        loadQuestion();
-    }
+            if (cartItem) {
+                cartItem.qty++;
+            } else {
+                cart.push({ ...flower, qty: 1 });
+            }
+            renderCart();
+        }
 
-    // شروع اولین سوال هنگام لود صفحه
-    loadQuestion();
-</script>
+        function changeQty(productId, delta) {
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+            }
+            renderCart();
+        }
 
+        function renderCart() {
+            const list = document.getElementById("cart-items-list");
+            const checkoutButton = document.getElementById("checkout-btn");
+            const totalEl = document.getElementById("total-price");
+
+            list.replaceChildren();
+            let total = 0;
+
+            if (cart.length === 0) {
+                list.innerHTML = '<p class="empty-message" style="text-align: center; color: #777;">سبد خرید خالی است.</p>';
+                checkoutButton.style.display = "none";
+            } else {
+                cart.forEach(item => {
+                    total += item.price * item.qty;
+                    const row = document.createElement("div");
+                    row.className = "cart-item";
+                    row.innerHTML = `
+                        <div class="item-info">
+                            <div>${item.name}</div>
+                            <div style="font-size: 12px; color: #666;">${formatPrice(item.price * item.qty)} تومان</div>
+                        </div>
+                        <div class="item-controls">
+                            <button class="qty-btn" onclick="changeQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    `;
+                    list.appendChild(row);
+                });
+                checkoutButton.style.display = "block";
+            }
+            totalEl.textContent = formatPrice(total);
+        }
+
+        function showOrderForm() {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById("order-form-container").style.display = "block";
+        }
+
+        function closePanels() {
+            document.getElementById("overlay").style.display = "none";
+            document.getElementById("order-form-container").style.display = "none";
+            document.getElementById("review-form-container").style.display = "none";
+        }
+
+        function finishOrder() {
+            const name = document.getElementById("user-name").value.trim();
+            const phone = document.getElementById("user-phone").value.trim();
+            const address = document.getElementById("user-address").value.trim();
+            const postalCode = document.getElementById("user-postal-code").value.trim();
+            const plaque = document.getElementById("user-plaque").value.trim();
+            const unit = document.getElementById("user-unit").value.trim();
+            const date = document.getElementById("delivery-date").value;
+            const time = document.getElementById("delivery-time").value;
+
+            if (!name || !phone || !address || !postalCode || !plaque || !unit) {
+                alert("لطفاً همه فیلدها را پر کنید.");
+                return;
+            }
+
+            lastCustomerName = name;
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // نمایش رسید
+            const receipt = document.getElementById("receipt");
+            receipt.style.display = "block";
+            receipt.innerHTML = `
+                <h2>✅ سفارش با موفقیت ثبت شد</h2>
+                <p>ممنون ${name} عزیز!</p>
+                <p><strong>آیتم‌ها:</strong> ${cart.map(i => `${i.name} (${i.qty} عدد)`).join(", ")}</p>
+                <p><strong>جمع کل:</strong> ${formatPrice(total)} تومان</p>
+                <p><strong>زمان تحویل:</strong> ${date} | ${time}</p>
+                <p><strong>آدرس:</strong> ${address}، پلاک ${plaque}، واحد ${unit}</p>
+                <p><strong>کد پستی:</strong> ${postalCode}</p>
+            `;
+
+            document.getElementById("flower-container").style.display = "none";
+            document.querySelector(".cart-section").style.display = "none";
+            closePanels();
+            
+            // ذخیره در LocalStorage برای نمایش در رسید
+            const orderRecord = { name, total, date, time, items: cart.map(i => i.name) };
+            const orders = JSON.parse(localStorage.getItem("flowerOrders") || "[]");
+            orders.push(orderRecord);
+            localStorage.setItem("flowerOrders", JSON.stringify(orders));
+
+            cart = [];
+            renderCart();
+            showPanel("review-form-container");
+        }
+
+        // تابع کمکی برای نمایش پنل نظر (جایگزین شده با منطق جدید)
+        function showPanel(id) {
+            document.getElementById("overlay").style.display = "block";
+            document.getElementById(id).style.display = "block";
+        }
+
+        function saveReview() {
+            const text = document.getElementById("review-text").value.trim();
+            if (!text) { alert("نظر را بنویسید."); return; }
+
+            const review = { name: lastCustomerName, text, date: new Date().toLocaleDateString("fa-IR") };
+            const reviews = JSON.parse(localStorage.getItem("flowerReviews") || "[]");
+            reviews.unshift(review);
+            localStorage.setItem("flowerReviews", JSON.stringify(reviews));
+
+            document.getElementById("review-text").value = "";
+            closePanels();
+            renderReviews();
+            alert("ممنون از نظر شما!");
+        }
+
+        function renderReviews() {
+            const list = document.getElementById("reviews-list");
+            const reviews = JSON.parse(localStorage.getItem("flowerReviews") || "[]");
+            list.replaceChildren();
+
+            if (reviews.length === 0) {
+                list.innerHTML = '<p class="empty-message">هنوز نظری ثبت نشده است.</p>';
+                return;
+            }
+
+            reviews.forEach(r => {
+                const div = document.createElement("div");
+                div.className = "review-item";
+                div.innerHTML = `<div class="review-name">${r.name}</div><div class="review-date">${r.date}</div><div>${r.text}</div>`;
+                list.appendChild(div);
+            });
+        }
+
+        showFlowers();
+        renderCart();
+        renderReviews();
+    </script>
 </body>
 </html>
